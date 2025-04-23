@@ -37,8 +37,10 @@ steps:
         https://myrepo.com/conan-config.git
 
   - name: Install Conan dependencies
-    run: conan install . --build=missing
+    run: conan install . --lockfile=conan.lock --lockfile-partial --lockfile-out=conan.lock --build=missing
 ```
+
+In order to ensure repeatability, the use of lockfiles on the consumer side is greatly encouraged: please check the [lockfile docs](https://docs.conan.io/2/tutorial/versioning/lockfiles.html#tutorial-versioning-lockfiles) for more information.
 
 ## Options
 
