@@ -57,13 +57,6 @@ runs:
       if: steps.preserve-envvars.outputs.PKG_CONFIG_PATH
       run: echo "PKG_CONFIG_PATH=${{ steps.preserve-envvars.outputs.PKG_CONFIG_PATH }}" >> "$GITHUB_ENV"
 
-    - name: 'Unset PKG_CONFIG_PATH'
-      shell: bash
-      run: |
-        if [ -n "${PKG_CONFIG_PATH}" ]; then
-          unset PKG_CONFIG_PATH
-        fi
-
     - name: 'Get installed Python version'
       id: get-python-version
       shell: bash
