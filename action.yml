@@ -39,12 +39,23 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - id: preserve-envvars
+      shell: bash
+      run: echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> "$GITHUB_OUTPUT"
+
     - name: 'Install Python'
       uses: actions/setup-python@v5
       id: setup-python
       with:
         python-version: ${{ inputs.python_version }}
-        update-environment: true
+
+    - name: 'Remove PKG_CONFIG_PATH from environment'
+      shell: bash
+      run: sed -i '/PKG_CONFIG_PATH/d' "$GITHUB_ENV"
+
+    - shell: bash
+      if: steps.preserve-envvars.outputs.PKG_CONFIG_PATH
+      run: echo "PKG_CONFIG_PATH=${{ steps.preserve-envvars.outputs.PKG_CONFIG_PATH }}" >> "$GITHUB_ENV"
 
     - name: 'Unset PKG_CONFIG_PATH'
       shell: bash
