@@ -44,7 +44,7 @@ runs:
       id: setup-python
       with:
         python-version: ${{ inputs.python_version }}
-        update_environment: false
+        update-environment: false
 
     - name: 'Get installed Python version'
       id: get-python-version
