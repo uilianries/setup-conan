@@ -44,7 +44,14 @@ runs:
       id: setup-python
       with:
         python-version: ${{ inputs.python_version }}
-        update-environment: false
+        update-environment: true
+
+    - name: 'Unset PKG_CONFIG_PATH'
+      shell: bash
+      run: |
+        if [ -n "${PKG_CONFIG_PATH}" ]; then
+          unset PKG_CONFIG_PATH
+        fi
 
     - name: 'Get installed Python version'
       id: get-python-version

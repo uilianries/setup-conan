@@ -43,7 +43,6 @@ jobs:
           conan profile show -pr:a default
           cat "$(conan config home)/audit_providers.json"
           conan config home
-          python --version
           conan --version | grep -q '2.15.1'
           conan profile show -pr:a default | grep -q 'settings'
           grep -q token "$(conan config home)/audit_providers.json"
