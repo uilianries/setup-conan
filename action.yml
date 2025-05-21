@@ -51,7 +51,7 @@ runs:
 
     - name: 'Remove PKG_CONFIG_PATH from environment'
       shell: bash
-      run: sed -i '/PKG_CONFIG_PATH/d' "$GITHUB_ENV"
+      run: echo "PKG_CONFIG_PATH=" >> "$GITHUB_ENV"
 
     - shell: bash
       if: steps.preserve-envvars.outputs.PKG_CONFIG_PATH
