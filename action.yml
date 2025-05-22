@@ -76,17 +76,11 @@ runs:
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
 
-    - name: Add Conan to PATH
-      shell: bash
-      id: add-conan-to-path
-      run: |
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "${{ env.pythonLocation }}/Scripts" >> $GITHUB_PATH
-        else
-          echo "${{ env.pythonLocation }}/bin" >> $GITHUB_PATH
-        fi
-      env:
-        pythonLocation: ${{ steps.setup-python.outputs.pythonLocation }}
+#    - name: Add Conan to PATH
+#      shell: bash
+#      id: add-conan-to-path
+#      run: |
+#        dirname "${{ steps.setup-python.outputs.python-path }}" >> $GITHUB_PATH
 
     - name: Detect Conan profile
       shell: bash
