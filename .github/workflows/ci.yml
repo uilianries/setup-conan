@@ -39,11 +39,12 @@ jobs:
       - name: Verify action results
         shell: bash
         run: |
+          which conan
           conan --version | grep -q '2.15.1'
           conan profile show -pr:a default | grep -q 'settings'
           grep -q token "$(conan config home)/audit_providers.json"
           conan config home | grep -q "conan_home"
-          python --version | grep -q '3.12'
+          which conan | grep -q '3.12'
 
       - name: Validate caching Conan packages
         shell: bash
