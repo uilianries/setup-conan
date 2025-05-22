@@ -80,7 +80,7 @@ runs:
       shell: bash
       id: add-conan-to-path
       run: |
-        dirname "${{ steps.setup-python.outputs.python-path }}" >> $GITHUB_PATH
+        '${{ steps.setup-python.outputs.python-path }}' -m pip show conan | grep Location | cut -d' ' -f2 >> $GITHUB_PATH
 
     - name: Detect Conan profile
       shell: bash
