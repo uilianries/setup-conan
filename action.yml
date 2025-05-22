@@ -52,7 +52,6 @@ runs:
       run: |
         echo "python-version=$('${{ steps.setup-python.outputs.python-path }}' --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
         '${{ steps.setup-python.outputs.python-path }}' -m pip install pipx
-        '${{ steps.setup-python.outputs.python-path }}' -m pipx ensurepath
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
