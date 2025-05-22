@@ -51,7 +51,6 @@ runs:
       shell: bash
       run: |
         echo "python-version=$('${{ steps.setup-python.outputs.python-path }}' --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
-        '${{ steps.setup-python.outputs.python-path }}' -m pip install pipx
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
@@ -64,17 +63,30 @@ runs:
       shell: bash
       id: install-conan
       run: |
+        '${{ steps.setup-python.outputs.python-path }}' -m pip install --upgrade pip
         if [ -n "${{ inputs.version }}" ]; then
           conan_version="${{ inputs.version }}"
           if [[ "$conan_version" == 1.* ]]; then
             echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
             exit 1
           fi
-          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan==${{ inputs.version }}
+          '${{ steps.setup-python.outputs.python-path }}' -m pip install conan==${{ inputs.version }}
         else
-          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan
+          '${{ steps.setup-python.outputs.python-path }}' -m pip install conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
+
+    - name: Add Conan to PATH
+      shell: bash
+      id: add-conan-to-path
+      run: |
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "${{ env.pythonLocation }}/Scripts" >> $GITHUB_PATH
+        else
+          echo "${{ env.pythonLocation }}/bin" >> $GITHUB_PATH
+        fi
+      env:
+        pythonLocation: ${{ steps.setup-python.outputs.pythonLocation }}
 
     - name: Detect Conan profile
       shell: bash

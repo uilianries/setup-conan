@@ -50,6 +50,11 @@ jobs:
           conan config home | grep -q "conan_home"
           which conan | grep -q '3.12'
 
+      - name: Install zlib with Conan
+        shell: bash
+        run: |
+          conan install -r conancenter --requires=zlib/1.3.1--build=missing
+
       - name: Install python again
         uses: actions/setup-python@v5
         id: setup-python
