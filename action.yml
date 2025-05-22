@@ -50,9 +50,9 @@ runs:
       id: get-python-version
       shell: bash
       run: |
-        echo "python-version=$(${{ steps.setup-python.outputs.python-path }} --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
-        ${{ steps.setup-python.outputs.python-path }} -m pip install pipx
-        ${{ steps.setup-python.outputs.python-path }} -m pipx ensurepath
+        echo "python-version=$('${{ steps.setup-python.outputs.python-path }}' --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+        '${{ steps.setup-python.outputs.python-path }}' -m pip install pipx
+        '${{ steps.setup-python.outputs.python-path }}' -m pipx ensurepath
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
@@ -71,9 +71,9 @@ runs:
             echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
             exit 1
           fi
-          ${{ steps.setup-python.outputs.python-path }} -m pipx install conan==${{ inputs.version }}
+          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan==${{ inputs.version }}
         else
-          ${{ steps.setup-python.outputs.python-path }} -m pipx install conan
+          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
 
