@@ -63,24 +63,18 @@ runs:
       shell: bash
       id: install-conan
       run: |
-        '${{ steps.setup-python.outputs.python-path }}' -m pip install --upgrade pip
+        '${{ steps.setup-python.outputs.python-path }}' -m pip install --upgrade pip pipx
         if [ -n "${{ inputs.version }}" ]; then
           conan_version="${{ inputs.version }}"
           if [[ "$conan_version" == 1.* ]]; then
             echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
             exit 1
           fi
-          '${{ steps.setup-python.outputs.python-path }}' -m pip install conan==${{ inputs.version }}
+          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan==${{ inputs.version }}
         else
-          '${{ steps.setup-python.outputs.python-path }}' -m pip install conan
+          '${{ steps.setup-python.outputs.python-path }}' -m pipx install conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
-
-    - name: Add Conan to PATH
-      shell: bash
-      id: add-conan-to-path
-      run: |
-        '${{ steps.setup-python.outputs.python-path }}' -m pip show conan | grep Location | cut -d' ' -f2 >> $GITHUB_PATH
 
     - name: Detect Conan profile
       shell: bash
