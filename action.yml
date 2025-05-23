@@ -82,7 +82,8 @@ runs:
       run: |
         python_path="${{ steps.setup-python.outputs.python-path }}"
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          python_dir="${python_path//'\\python.exe'}"
+          python_path_forward="${python_path//\\//}"
+          python_dir="${python_path_forward%/python.exe}"
           conan_path="${python_dir}conan.exe"
           echo "CONAN PATH: $conan_path"
           mkdir "${HOME}/.local/conan/bin"
