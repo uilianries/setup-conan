@@ -69,12 +69,12 @@ runs:
         fi
         python_dir=$(dirname $(which ${{ steps.setup-python.outputs.python-path }}))
         if [ "$RUNNER_OS" != "Windows" ]; then
-          ls $HOME/.local/bin
           mkdir -p $HOME/.local/bin
-          ln -s $python_dir/conan $HOME/.local/bin/conan
+          ls $HOME/.local/bin
+          ln -s "$python_dir/conan" $HOME/.local/bin/conan
         else
-          ls $HOME/bin
           mkdir -p $HOME/bin
+          ls $HOME/bin
           ln -s $python_dir/conan $HOME/bin/conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
