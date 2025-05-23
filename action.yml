@@ -84,11 +84,12 @@ runs:
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           python_path_forward="${python_path//\\//}"
           python_dir="${python_path_forward%/python.exe}"
-          conan_path="${python_dir}/conan.exe"
+          echo "PYTHON DIR: ${python_dir}"
+          conan_path="${python_dir}/conan"
           echo "CONAN PATH: $conan_path"
           ${conan_path} --version
           mkdir -p "${HOME}/.local/conan/bin"
-          cp ${conan_path} "${HOME}/.local/conan/bin/conan.exe"
+          cp ${conan_path} "${HOME}/.local/conan/bin/conan"
           echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
         else
           python_path="${{ steps.setup-python.outputs.python-path }}"
