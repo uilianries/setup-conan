@@ -35,6 +35,14 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Show path
+      shell: bash
+      run: |
+        echo "PATH=$PATH"
+        echo "HOME=$HOME"
+        echo "RUNNER_TEMP=$RUNNER_TEMP"
+        echo "RUNNER_OS=$RUNNER_OS"
+
     - name: Check Conan version to be installed
       shell: bash
       id: check-conan-version

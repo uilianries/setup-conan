@@ -37,7 +37,6 @@ jobs:
       - name: Verify action results
         shell: bash
         run: |
-          echo "PATH: $PATH"
           conan --version | grep -q '2.16.1'
           conan profile show -pr:a default | grep -q 'settings'
           grep -q token "$(conan config home)/audit_providers.json"
