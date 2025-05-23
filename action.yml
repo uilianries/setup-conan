@@ -39,6 +39,7 @@ runs:
       shell: bash
       id: check-conan-version
       run: |
+        conan_version=2.16.1
         if [ -n "${{ inputs.version }}" ]; then
           conan_version="${{ inputs.version }}"
           if [[ "$conan_version" == 1.* ]]; then
@@ -46,6 +47,7 @@ runs:
             exit 1
           fi
         fi
+        echo "conan-version=$conan_version" >> $GITHUB_OUTPUT
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
@@ -59,39 +61,33 @@ runs:
       id: install-self-contained-conan-windows
       if: runner.os == 'Windows'
       run: |
-        conan_version="${{ inputs.version }}"
-        conan_version="${conan_version:-2.16.1}"
+        conan_version=${{ steps.install-conan.outputs.conan-version }}
         export INSTALL_DIR="$HOME/.local/bin"
         mkdir -p "$INSTALL_DIR"
         curl -sSL -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-windows-x86_64.zip
         unzip -q "$RUNNER_TEMP/conan.zip" -d "$INSTALL_DIR"
-        echo "PATH=$INSTALL_DIR:$PATH" >> $GITHUB_ENV
 
     - name: Install self-contained Conan on Linux
       shell: bash
       id: install-self-contained-conan-linux
       if: runner.os == 'Linux'
       run: |
-        conan_version="${{ inputs.version }}"
-        conan_version="${conan_version:-2.16.1}"
-        export INSTALL_DIR="$HOME/.local/bin"
+        conan_version=${{ steps.install-conan.outputs.conan-version }}
+        export INSTALL_DIR="$HOME/.local"
         mkdir -p "$INSTALL_DIR"
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-linux-x86_64.tgz
         tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$INSTALL_DIR"
-        echo "PATH=$INSTALL_DIR/bin:$PATH" >> $GITHUB_ENV
 
     - name: Install self-contained Conan on MacOS
       shell: bash
       id: install-self-contained-conan-macos
       if: runner.os == 'macOS'
       run: |
-        conan_version="${{ inputs.version }}"
-        conan_version="${conan_version:-2.16.1}"
-        export INSTALL_DIR="$HOME/.local/bin"
+        conan_version=${{ steps.install-conan.outputs.conan-version }}
+        export INSTALL_DIR="$HOME/.local"
         mkdir -p "$INSTALL_DIR"
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-macos-arm64.tgz
         tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$INSTALL_DIR"
-        echo "PATH=$INSTALL_DIR/bin:$PATH" >> $GITHUB_ENV
 
     - name: Detect Conan profile
       shell: bash
