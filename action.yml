@@ -74,6 +74,8 @@ runs:
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
         which conan
+        conan_folder=$(dirname $(which conan))
+        echo "DIR CONAN: $conan_folder"
         echo "PATH: $PATH"
         echo "CONAN_HOME: $CONAN_HOME"
         echo "PYTHONPATH: $PYTHONPATH"
