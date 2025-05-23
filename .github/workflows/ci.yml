@@ -21,6 +21,16 @@ jobs:
       - name: Execute checkout
         uses: actions/checkout@v4
 
+      - name: Show runner information
+        shell: bash
+        run: |
+          echo "OS: ${{ runner.os }}"
+          echo "GITHUB_WORKSPACE: ${{ github.workspace }}"
+          echo "GITHUB_REPOSITORY: ${{ github.repository }}"
+          echo "GITHUB_REF: ${{ github.ref }}"
+          echo "GITHUB_RUN_ID: ${{ github.run_id }}"
+          echo "GITHUB_RUN_NUMBER: ${{ github.run_number }}"
+
       - name: Consume Conan Action
         uses: ./
         with:

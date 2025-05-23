@@ -23,10 +23,6 @@ inputs:
     description: 'Cache all Conan packages from the cache'
     required: false
     default: 'false'
-  python_version:
-    description: 'Python version to install'
-    required: false
-    default: '3.10'
 
 outputs:
   conan-version:
@@ -39,17 +35,17 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: 'Install Python'
-      uses: actions/setup-python@v5
-      id: setup-python
-      with:
-        python-version: ${{ inputs.python_version }}
-
-    - name: 'Get installed Python version'
-      id: get-python-version
+    - name: Check Conan version to be installed
       shell: bash
+      id: check-conan-version
       run: |
-        echo "python-version=$(python --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+        if [ -n "${{ inputs.version }}" ]; then
+          conan_version="${{ inputs.version }}"
+          if [[ "$conan_version" == 1.* ]]; then
+            echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
+            exit 1
+          fi
+        fi
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
@@ -58,21 +54,38 @@ runs:
       run: |
         echo "CONAN_HOME=${{ inputs.home }}" >> $GITHUB_ENV
 
-    - name: 'Install Conan'
+    - name: Install self-contained Conan on Windows
       shell: bash
-      id: install-conan
+      id: install-self-contained-conan-windows
+      if: runner.os == 'Windows'
       run: |
-        if [ -n "${{ inputs.version }}" ]; then
-          conan_version="${{ inputs.version }}"
-          if [[ "$conan_version" == 1.* ]]; then
-            echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
-            exit 1
-          fi
-          pip install conan==${{ inputs.version }}
-        else
-          pip install conan
-        fi
-        echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
+        export INSTALL_DIR="$HOME/.local/bin"
+        mkdir -p "$INSTALL_DIR"
+        wget -q -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/2.15.1/conan-2.15.1-windows-x86_64.zip
+        unzip -q "$RUNNER_TEMP/conan.zip" -d "$INSTALL_DIR"
+        echo "PATH=$INSTALL_DIR:$PATH" >> $GITHUB_ENV
+
+    - name: Install self-contained Conan on Linux
+      shell: bash
+      id: install-self-contained-conan-linux
+      if: runner.os == 'Linux'
+      run: |
+        export INSTALL_DIR="$HOME/.local/bin"
+        mkdir -p "$INSTALL_DIR"
+        wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/2.15.1/conan-2.15.1-macos-arm64.tgz
+        tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$INSTALL_DIR"
+        echo "PATH=$INSTALL_DIR/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Install self-contained Conan on MacOS
+      shell: bash
+      id: install-self-contained-conan-macos
+      if: runner.os == 'macOS'
+      run: |
+        export INSTALL_DIR="$HOME/.local/bin"
+        mkdir -p "$INSTALL_DIR"
+        wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/2.15.1/conan-2.15.1-macos-arm64.tgz
+        tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$INSTALL_DIR"
+        echo "PATH=$INSTALL_DIR/bin:$PATH" >> $GITHUB_ENV
 
     - name: Detect Conan profile
       shell: bash
