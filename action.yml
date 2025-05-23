@@ -82,13 +82,9 @@ runs:
       run: |
         python_path="${{ steps.setup-python.outputs.python-path }}"
         python_dir=$(dirname ${python_path})
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          mkdir -p ${HOME}/bin
-          ln -s "${python_dir}/conan" "${HOME}/bin/conan"
-        else
-          mkdir -p ${HOME}/.local/bin
-          ln -s "${python_dir}/conan" "${HOME}/.local/conan"
-        fi
+        mkdir -p ${HOME}/.local/conan/bin
+        ln -s "${python_dir}/conan" "${HOME}/.local/conan/bin/conan"
+        echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
 
     - name: Detect Conan profile
