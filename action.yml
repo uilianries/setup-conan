@@ -80,6 +80,7 @@ runs:
       run: |
         conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-linux-x86_64.tgz
+        mkdir -p "$HOME/.local"
         tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$HOME/.local"
 
     - name: Install self-contained Conan on MacOS
@@ -89,6 +90,7 @@ runs:
       run: |
         conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-macos-arm64.tgz
+        mkdir -p "$HOME/.local"
         tar -xzf "$RUNNER_TEMP/conan.tgz" -C "$HOME/.local"
 
     - name: Detect Conan profile
