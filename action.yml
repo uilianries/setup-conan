@@ -39,6 +39,18 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Check Conan version
+      shell: bash
+      id: check-conan-version
+      run: |
+        if [ -n "${{ inputs.version }}" ]; then
+          conan_version="${{ inputs.version }}"
+          if [[ "$conan_version" == 1.* ]]; then
+            echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
+            exit 1
+          fi
+        fi
+
     - name: 'Install Python'
       uses: actions/setup-python@v5
       id: setup-python
@@ -59,22 +71,23 @@ runs:
       run: |
         if [ -n "${{ inputs.version }}" ]; then
           conan_version="${{ inputs.version }}"
-          if [[ "$conan_version" == 1.* ]]; then
-            echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
-            exit 1
-          fi
           ${{ steps.setup-python.outputs.python-path }} -m pip install conan==${{ inputs.version }}
         else
           ${{ steps.setup-python.outputs.python-path }} -m pip install conan
         fi
+
+    - name: Configure Conan in PATH
+      shell: bash
+      id: configure-conan-path
+      run: |
+        python_path="${{ steps.setup-python.outputs.python-path }}"
+        python_dir=$(dirname ${python_path})
         if [ "$RUNNER_OS" == "Windows" ]; then
           mkdir -p $HOME/bin
-          python_dir=$(dirname ${{ steps.setup-python.outputs.python-path }})
-          ln -s python_dir/conan $HOME/bin/conan
+          ln -s ${python_dir}/conan $HOME/bin/conan
         else
           mkdir -p $HOME/.local/bin
-          python_dir=$(dirname ${{ steps.setup-python.outputs.python-path }})
-          ln -s python_dir/conan $HOME/.local/conan
+          ln -s ${python_dir}/conan $HOME/.local/conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
 
