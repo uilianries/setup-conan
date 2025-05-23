@@ -73,7 +73,6 @@ runs:
           mkdir -p $HOME/.local/bin
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
-        which python || true
 
     - name: Detect Conan profile
       shell: bash
