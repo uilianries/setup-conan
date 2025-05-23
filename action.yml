@@ -73,6 +73,10 @@ runs:
           pip install conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
+        which conan
+        echo "PATH: $PATH"
+        echo "CONAN_HOME: $CONAN_HOME"
+        echo "PYTHONPATH: $PYTHONPATH"
 
     - name: Detect Conan profile
       shell: bash
