@@ -61,7 +61,7 @@ runs:
       run: |
         export INSTALL_DIR="$HOME/.local/bin"
         mkdir -p "$INSTALL_DIR"
-        wget -q -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/2.15.1/conan-2.15.1-windows-x86_64.zip
+        curl -sSL -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/2.15.1/conan-2.15.1-windows-x86_64.zip
         unzip -q "$RUNNER_TEMP/conan.zip" -d "$INSTALL_DIR"
         echo "PATH=$INSTALL_DIR:$PATH" >> $GITHUB_ENV
 
