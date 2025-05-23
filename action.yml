@@ -85,6 +85,7 @@ runs:
           python_path_forward="${python_path//\\//}"
           python_dir="${python_path_forward%/python.exe}"
           echo "PYTHON DIR: ${python_dir}"
+          ls "${python_dir}"
           conan_path="${python_dir}/conan"
           echo "CONAN PATH: $conan_path"
           ${conan_path} --version
