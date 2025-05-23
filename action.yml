@@ -61,7 +61,7 @@ runs:
       id: install-self-contained-conan-windows
       if: runner.os == 'Windows'
       run: |
-        conan_version=${{ steps.install-conan.outputs.conan-version }}
+        conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         export INSTALL_DIR="$HOME/.local/bin"
         mkdir -p "$INSTALL_DIR"
         curl -sSL -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-windows-x86_64.zip
@@ -72,7 +72,7 @@ runs:
       id: install-self-contained-conan-linux
       if: runner.os == 'Linux'
       run: |
-        conan_version=${{ steps.install-conan.outputs.conan-version }}
+        conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         export INSTALL_DIR="$HOME/.local"
         mkdir -p "$INSTALL_DIR"
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-linux-x86_64.tgz
@@ -83,7 +83,7 @@ runs:
       id: install-self-contained-conan-macos
       if: runner.os == 'macOS'
       run: |
-        conan_version=${{ steps.install-conan.outputs.conan-version }}
+        conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         export INSTALL_DIR="$HOME/.local"
         mkdir -p "$INSTALL_DIR"
         wget -q -O $RUNNER_TEMP/conan.tgz https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-macos-arm64.tgz
