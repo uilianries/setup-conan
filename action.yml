@@ -73,7 +73,7 @@ runs:
           conan_version="${{ inputs.version }}"
           "${{ steps.setup-python.outputs.python-path }}" -m pip install conan==${{ inputs.version }}
         else
-          "${{ steps.setup-python.outputs.python-path }}"" -m pip install conan
+          "${{ steps.setup-python.outputs.python-path }}" -m pip install conan
         fi
 
     - name: Configure Conan in PATH
