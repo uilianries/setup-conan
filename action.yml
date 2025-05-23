@@ -71,7 +71,7 @@ runs:
       run: |
         conan_version=${{ steps.check-conan-version.outputs.conan-version }}
         curl -sSL -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-windows-x86_64.zip
-        unzip -q "$RUNNER_TEMP/conan.zip" -d "$HOME"
+        unzip -q "$RUNNER_TEMP/conan.zip" -d "$HOME/bin"
 
     - name: Install self-contained Conan on Linux
       shell: bash
