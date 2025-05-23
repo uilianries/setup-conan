@@ -86,7 +86,8 @@ runs:
           python_dir="${python_path_forward%/python.exe}"
           conan_path="${python_dir}/conan.exe"
           echo "CONAN PATH: $conan_path"
-          mkdir "${HOME}/.local/conan/bin"
+          ${conan_path} --version
+          mkdir -p "${HOME}/.local/conan/bin"
           cp ${conan_path} "${HOME}/.local/conan/bin/conan.exe"
           echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
         else
