@@ -70,8 +70,6 @@ runs:
         python_dir=$(dirname $(which ${{ steps.setup-python.outputs.python-path }}))
         if [ "$RUNNER_OS" != "Windows" ]; then
           mkdir -p $HOME/.local/bin
-          ls $HOME/.local/bin
-          ln -s "$python_dir/conan" $HOME/.local/bin/conan
         else
           mkdir -p $HOME/bin
           ls $HOME/bin
