@@ -24,7 +24,6 @@ jobs:
       - name: Consume Conan Action
         uses: ./
         with:
-          version: '2.15.1'
           config_urls: |
               https://github.com/conan-io/conan-extensions.git
               https://github.com/conan-io/conan-extensions.git
@@ -38,7 +37,7 @@ jobs:
       - name: Verify action results
         shell: bash
         run: |
-          conan --version | grep -q '2.15.1'
+          conan --version | grep -q '2.16.1'
           conan profile show -pr:a default | grep -q 'settings'
           grep -q token "$(conan config home)/audit_providers.json"
           conan config home | grep -q "conan_home"
