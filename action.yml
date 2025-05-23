@@ -44,12 +44,7 @@ runs:
       id: setup-python
       with:
         python-version: ${{ inputs.python_version }}
-
-    - name: 'Get installed Python version'
-      id: get-python-version
-      shell: bash
-      run: |
-        echo "python-version=$(python --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+        update-environment: false
 
     - name: Set CONAN_HOME
       if: ${{ inputs.home != '' }}
@@ -72,15 +67,15 @@ runs:
         else
           pip install conan
         fi
+        python_dir=$(dirname $(which ${{ steps.setup-python.outputs.python-path }}))
+        if [ "$RUNNER_OS" != "Windows" ]; then
+          mkdir -p $HOME/.local/bin
+          ln -s $python_dir/conan $HOME/.local/bin/conan
+        else
+          mkdir -p $HOME/bin
+          ln -s $python_dir/conan $HOME/bin/conan
+        fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
-        which conan
-        conan_folder=$(dirname $(which conan))
-        echo "DIR CONAN: $conan_folder"
-        echo "PATH: $PATH"
-        echo "CONAN_HOME: $CONAN_HOME"
-        echo "PYTHONPATH: $PYTHONPATH"
-        echo "python-path: ${{ steps.setup-python.outputs.python-path }}"
-        ls $(dirname $(which ${{ steps.setup-python.outputs.python-path }}))
 
     - name: Detect Conan profile
       shell: bash
