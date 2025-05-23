@@ -63,14 +63,18 @@ runs:
             echo "ERROR: Conan 1.x is not supported. Please use Conan 2.x"
             exit 1
           fi
-          pip install conan==${{ inputs.version }}
+          ${{ steps.setup-python.outputs.python-path }} -m pip install conan==${{ inputs.version }}
         else
-          pip install conan
+          ${{ steps.setup-python.outputs.python-path }} -m pip install conan
         fi
         if [ "$RUNNER_OS" == "Windows" ]; then
           mkdir -p $HOME/bin
+          python_dir=$(dirname ${{ steps.setup-python.outputs.python-path }})
+          ln -s python_dir/conan $HOME/bin/conan
         else
           mkdir -p $HOME/.local/bin
+          python_dir=$(dirname ${{ steps.setup-python.outputs.python-path }})
+          ln -s python_dir/conan $HOME/.local/conan
         fi
         echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
 
