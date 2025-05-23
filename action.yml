@@ -81,11 +81,21 @@ runs:
       id: configure-conan-path
       run: |
         python_path="${{ steps.setup-python.outputs.python-path }}"
-        python_dir=$(dirname ${python_path})
-        mkdir -p ${HOME}/.local/conan/bin
-        ln -s "${python_dir}/conan" "${HOME}/.local/conan/bin/conan"
-        echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
-        echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          python_dir="${python_path//'\\python.exe'}"
+          conan_path="${python_dir}conan.exe"
+          echo "CONAN PATH: $conan_path"
+          mkdir "${HOME}/.local/conan/bin"
+          cp ${conan_path} "${HOME}/.local/conan/bin/conan.exe"
+          echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
+        else
+          python_path="${{ steps.setup-python.outputs.python-path }}"
+          python_dir=$(dirname ${python_path})
+          mkdir -p ${HOME}/.local/conan/bin
+          ln -s "${python_dir}/conan" "${HOME}/.local/conan/bin/conan"
+          echo "${HOME}/.local/conan/bin" >> $GITHUB_PATH
+          echo "conan-version=$(conan --version | cut -d' ' -f3)" >> $GITHUB_OUTPUT
+        fi
 
     - name: Detect Conan profile
       shell: bash
