@@ -70,10 +70,9 @@ runs:
       if: runner.os == 'Windows'
       run: |
         conan_version=${{ steps.check-conan-version.outputs.conan-version }}
-        export INSTALL_DIR="$HOME/.local/bin"
         mkdir -p "$INSTALL_DIR"
         curl -sSL -o $RUNNER_TEMP/conan.zip https://github.com/conan-io/conan/releases/download/${conan_version}/conan-${conan_version}-windows-x86_64.zip
-        unzip -q "$RUNNER_TEMP/conan.zip" -d "$INSTALL_DIR"
+        unzip -q "$RUNNER_TEMP/conan.zip" -d "$HOME"
 
     - name: Install self-contained Conan on Linux
       shell: bash
