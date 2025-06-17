@@ -23,6 +23,7 @@ inputs:
     description: 'Cache all Conan packages from the cache'
     required: false
     default: 'false'
+    deprecationMessage: 'This input is deprecated and will be removed in future versions. Use actions/cache to cache Conan packages instead.'
   python_version:
     description: 'Python version to install'
     required: false
