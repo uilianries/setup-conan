@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: build-on-${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -36,10 +36,14 @@ jobs:
         with:
           home: ${{ github.workspace }}/.conan2
 
+      - name: Configure Conan profile
+        shell: bash
+        run: conan profile detect -e --name ${{ github.job }}
+
       - name: Build
         shell: bash
         run: |
-          conan install -r conancenter --update --requires=fmt/11.2.0 --build=missing
+          conan install -pr:a ${{ github.job }} -r conancenter --update --requires=fmt/11.2.0 --build=missing
 
       - name: Cache Conan packages
         uses: actions/cache/save@v4
