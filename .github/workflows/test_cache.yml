@@ -25,8 +25,18 @@ jobs:
 
       - name: Consume Conan Action
         uses: ./
+        with:
+          home: ${{ github.workspace }}/.conan2
 
       - name: Build
         shell: bash
         run: |
           conan install -r conancenter --update --requires=fmt/11.2.0 --build=missing
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+            path: ${{ github.workspace }}/.conan2
+            key: conan-${{ runner.os }}-${{ hashFiles('.conan2/**/*') }}
+            restore-keys: |
+              conan-${{ runner.os }}-
