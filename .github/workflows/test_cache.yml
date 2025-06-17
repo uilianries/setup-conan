@@ -1,0 +1,32 @@
+name: Test Conan Action with external cache
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          [
+            ubuntu-22.04,
+            ubuntu-24.04,
+            macos-14,
+            macos-15,
+            windows-2022,
+          ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Consume Conan Action
+        uses: ./
+
+      - name: Build
+        shell: bash
+        run: |
+          conan install -r conancenter --update test/conanfile.txt --build=missing
