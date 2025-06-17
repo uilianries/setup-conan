@@ -1,2 +1,0 @@
-[requires]
-fmt/11.2.0
