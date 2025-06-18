@@ -67,6 +67,7 @@ jobs:
           fi
           echo "package-name=${package_name}" >> $GITHUB_OUTPUT
           conan cache save --no-source --file package-${package_name}.tar.gz "*/*:*"
+          ls -la "${{ github.workspace }}"
 
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
@@ -113,7 +114,7 @@ jobs:
       - name: Restore Conan saved artifacts
         shell: bash
         run: |
-          ls -la ${{ github.workspace }}/package-*
+          ls -la "${{ github.workspace }}"
           for file in ${{ github.workspace }}/package-*.tar.gz; do
             conan cache restore "$file"
           done
