@@ -26,6 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore Conan cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/.conan2/p
+          key: conan-cache-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
+          restore-keys: conan-cache-
+
       - name: Consume Conan Action
         uses: ./
         with:
@@ -90,7 +97,7 @@ jobs:
       - name: Restore Conan saved artifacts
         shell: bash
         run: |
-          for file in ${{ github.workspace }}/.conan2/p/package-*.tar.gz; do
+          for file in ${{ github.workspace }}/package-*.tar.gz; do
             conan cache restore "$file"
           done
 
@@ -103,5 +110,5 @@ jobs:
       - name: Upload final Conan cache
         uses: actions/cache/save@v4
         with:
-          key: ${{ runner.os }}-conan
-          path: ${{ github.workspace }}/.conan2
+          key: conan-cache-${{ hashFiles('package-*.tar.gz') }}
+          path: ${{ github.workspace }}/.conan2/p
