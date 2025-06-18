@@ -61,6 +61,8 @@ jobs:
         with:
           name: package-${{ steps.build-package.outputs.package-id }}
           path: ${{ github.workspace }}/.conan2/p
+          overwrite: true
+          retention-days: 1
 
   cache-packages:
     runs-on: ubuntu-latest
