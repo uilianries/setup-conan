@@ -38,12 +38,12 @@ jobs:
 
       - name: Configure Conan profile
         shell: bash
-        run: conan profile detect -e --name ${{ github.job }}
+        run: conan profile detect -e --name ${{ matrix.os }}
 
       - name: Build
         shell: bash
         run: |
-          conan install -pr:a ${{ github.job }} -r conancenter --update --requires=fmt/11.2.0 --build=missing
+          conan install -pr:a ${{ matrix.os }} -r conancenter --update --requires=fmt/11.2.0 --build=missing
 
       - name: Cache Conan packages
         uses: actions/cache/save@v4
