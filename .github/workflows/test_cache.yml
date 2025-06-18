@@ -88,8 +88,6 @@ jobs:
             macos-latest,
             windows-latest,
           ]
-        shared: ["True", "False"]
-        package: ["fmt/11.2.0", "nlohmann_json/3.12.0", "spdlog/1.15.3", "gtest/1.16.0"]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -115,6 +113,7 @@ jobs:
       - name: Restore Conan saved artifacts
         shell: bash
         run: |
+          ls -la ${{ github.workspace }}/package-*
           for file in ${{ github.workspace }}/package-*.tar.gz; do
             conan cache restore "$file"
           done
