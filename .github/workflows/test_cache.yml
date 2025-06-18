@@ -112,7 +112,7 @@ jobs:
       - name: Restore Conan saved artifacts
         shell: bash
         run: |
-          ls -la "${{ github.workspace }}"
+          shopt -s nullglob
           for file in "${{ github.workspace }}"/package-*.tar.gz; do
             conan cache restore "$file"
           done
