@@ -30,9 +30,7 @@ jobs:
         id: cache
         with:
             path: ${{ github.workspace }}/.conan2
-            key: conan-${{ runner.os }}-${{ hashFiles('.conan2/**/*') }}
-            restore-keys: |
-              conan-${{ runner.os }}-
+            key: conan-${{ runner.os }}
 
       - name: Consume Conan Action
         uses: ./
@@ -60,4 +58,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
             path: ${{ github.workspace }}/.conan2
-            key: conan-${{ runner.os }}-${{ hashFiles('.conan2/**/*') }}
+            key: conan-${{ runner.os }}
