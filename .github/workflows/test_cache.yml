@@ -1,0 +1,128 @@
+name: Test Conan Action with external cache
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-packages:
+    name: build-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          [
+            ubuntu-22.04,
+            ubuntu-24.04,
+            macos-14,
+            macos-15,
+            windows-2022,
+          ]
+        shared: ["True", "False"]
+        package: ["fmt/11.2.0", "nlohmann_json/3.12.0", "spdlog/1.15.3", "gtest/1.16.0"]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore Conan cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/.conan2/p
+          key: conan-cache-${{ runner.os }}
+
+      - name: Consume Conan Action
+        uses: ./
+        with:
+          home: ${{ github.workspace }}/.conan2
+
+      - name: Configure Conan profile
+        shell: bash
+        run: conan profile detect -e --name ${{ matrix.os }}
+
+      - name: List cached Conan packages before build
+        shell: bash
+        run: conan list -c "*/*#latest:*"
+
+      - name: Build Conan packages
+        shell: bash
+        id: build-package
+        run: |
+          conan install -pr:a ${{ matrix.os }} --update --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" --build=missing
+
+      - name: List cached Conan packages after build
+        shell: bash
+        run: conan list -c "*/*#latest:*"
+
+      - name: Store Conan cache
+        shell: bash
+        id: save-cache
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            package_name=$(powershell -Command "[guid]::NewGuid().ToString()")
+          else
+            package_name=$(uuidgen)
+          fi
+          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
+          conan cache save --no-source --file package-${package_name}.tar.gz "*/*:*"
+
+      - name: Upload Conan cache artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ steps.save-cache.outputs.package-name }}
+          path: package-${{ steps.save-cache.outputs.package-name }}.tar.gz
+          overwrite: true
+          retention-days: 1
+          include-hidden-files: true
+
+  cache-packages:
+    needs: [build-packages]
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          [
+            ubuntu-latest,
+            macos-latest,
+            windows-latest,
+          ]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/.conan2
+          key: conan-cache-${{ runner.os }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "package-*"
+          path: ${{ github.workspace }}
+          merge-multiple: true
+
+      - name: Consume Conan Action
+        uses: ./
+        with:
+          home: ${{ github.workspace }}/.conan2
+
+      - name: Restore Conan saved artifacts
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for file in "${{ github.workspace }}"/package-*.tar.gz; do
+            conan cache restore "$file"
+          done
+
+      - name: Verify merged artifacts
+        shell: bash
+        run: |
+          conan list -c "*/*#latest:*"
+
+      - name: Upload final Conan cache
+        uses: actions/cache/save@v4
+        with:
+          key: conan-cache-${{ runner.os }}
+          path: ${{ github.workspace }}/.conan2/p
