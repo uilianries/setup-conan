@@ -51,8 +51,6 @@ jobs:
         id: build-package
         run: |
           conan install -pr:a ${{ matrix.os }} --update --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" --build=missing
-          echo "package-id=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".package_id')" >> $GITHUB_OUTPUT
-          echo "recipe-revision=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".rrev')" >> $GITHUB_OUTPUT
 
       - name: List cached Conan packages after build
         shell: bash
