@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-packages:
     name: build-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
     strategy:
       fail-fast: false
@@ -30,7 +30,7 @@ jobs:
         id: cache
         with:
             path: ${{ github.workspace }}/.conan2
-            key: conan-${{ runner.os }}
+            key: ${{ runner.os }}-conan
 
       - name: Consume Conan Action
         uses: ./
@@ -54,8 +54,39 @@ jobs:
         shell: bash
         run: conan list -c "*/*#latest:*"
 
-      - name: Cache Conan packages
+      - name: Upload Conan cache artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
+          path: ${{ github.workspace }}/.conan2/p
+
+  cache-packages:
+    runs-on: ubuntu-latest
+    needs: [build-packages]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/.conan2
+          key: ${{ runner.os }}-conan
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "package-*"
+          path: ${{ github.workspace }}/.conan2/p
+          merge-multiple: true
+
+      - name: Consume Conan Action
+        uses: ./
+        with:
+          home: ${{ github.workspace }}/.conan2
+
+      - name: Verify merged artifacts
+        run: conan list -c "*/*#latest:*"
+
+      - name: Upload final Conan cache
         uses: actions/cache/save@v4
         with:
-            path: ${{ github.workspace }}/.conan2
-            key: conan-${{ runner.os }}
+          key: ${{ runner.os }}-conan
+          path: ${{ github.workspace }}/.conan2
