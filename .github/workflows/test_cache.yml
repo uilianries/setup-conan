@@ -91,7 +91,7 @@ jobs:
         shell: bash
         run: |
           for file in ${{ github.workspace }}/.conan2/p/package-*.tar.gz; do
-            conan cache restore --file "$file"
+            conan cache restore "$file"
           done
 
       - name: Verify merged artifacts
