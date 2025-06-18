@@ -18,7 +18,7 @@ jobs:
             macos-15,
             windows-2022,
           ]
-        shared: [True, False]
+        shared: ["True", "False"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
