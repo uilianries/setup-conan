@@ -43,7 +43,7 @@ jobs:
 
       - name: List cached Conan packages before build
         shell: bash
-        run: conan list -c "fmt/11.2.0#latest/*"
+        run: conan list -c "fmt/11.2.0#latest:*"
 
       - name: Build Conan packages
         shell: bash
@@ -52,7 +52,7 @@ jobs:
 
       - name: List cached Conan packages after build
         shell: bash
-        run: conan list -c "fmt/11.2.0#latest/*"
+        run: conan list -c "fmt/11.2.0#latest:*"
 
       - name: Cache Conan packages
         uses: actions/cache/save@v4
