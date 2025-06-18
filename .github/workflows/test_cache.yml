@@ -45,16 +45,22 @@ jobs:
         run: |
           conan install -pr:a ${{ matrix.os }} --update --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" --build=missing
           echo "package-id=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".package_id')" >> $GITHUB_OUTPUT
+          echo "recipe-revision=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".rrev')" >> $GITHUB_OUTPUT
+
 
       - name: List cached Conan packages after build
         shell: bash
         run: conan list -c "*/*#latest:*"
 
+      - name: Store Conan cache in zip
+        shell: bash
+        run: conan cache save --no-source --file package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}.tar.gz "*"
+
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ steps.build-package.outputs.package-id }}
-          path: ${{ github.workspace }}/.conan2/p
+          name: package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}
+          path: package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}.tar.gz
           overwrite: true
           retention-days: 1
           include-hidden-files: true
@@ -80,6 +86,13 @@ jobs:
         uses: ./
         with:
           home: ${{ github.workspace }}/.conan2
+
+      - name: Restore Conan saved artifacts
+        shell: bash
+        run: |
+          for file in ${{ github.workspace }}/.conan2/p/package-*.tar.gz; do
+            conan cache restore --file "$file"
+          done
 
       - name: Verify merged artifacts
         run: |
