@@ -30,8 +30,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/.conan2/p
-          key: conan-cache-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
-          restore-keys: conan-cache-
+          key: conan-cache-${{ runner.os }}-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
+          restore-keys: conan-cache-${{ runner.os }}-
 
       - name: Consume Conan Action
         uses: ./
@@ -88,7 +88,8 @@ jobs:
       - uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/.conan2
-          key: ${{ runner.os }}-conan
+          key: conan-cache-${{ runner.os }}-
+          restore-keys: conan-cache-${{ runner.os }}-
 
       - uses: actions/download-artifact@v4
         with:
@@ -117,5 +118,5 @@ jobs:
       - name: Upload final Conan cache
         uses: actions/cache/save@v4
         with:
-          key: conan-cache-${{ hashFiles('package-*.tar.gz') }}
+          key: conan-cache-${{ runner.os }}-${{ hashFiles('package-*.tar.gz') }}
           path: ${{ github.workspace }}/.conan2/p
