@@ -58,19 +58,40 @@ jobs:
         shell: bash
         run: conan list -c "*/*#latest:*"
 
-      - name: Store Conan cache in zip
+      - name: Store Conan cache in zip on Unix
         shell: bash
-        id: save-cache
+        if: ${{ runner.os != 'Windows' }}
+        id: save-cache-unix
         run: |
           package_name=$(uuidgen)
           echo "package-name=${package_name}" >> $GITHUB_OUTPUT
           conan cache save --no-source --file package-${package_name}.tar.gz "*"
 
-      - name: Upload Conan cache artifacts
+      - name: Store Conan cache in zip on Windows
+        shell: pwsh
+        if: ${{ runner.os == 'Windows' }}
+        id: save-cache-windows
+        run: |
+          $package_name = [guid]::NewGuid().ToString()
+          Write-Output "package-name=$package_name" >> $env:GITHUB_OUTPUT
+          conan cache save --no-source --file "package-$package_name.tar.gz" "*"
+
+      - name: Upload Conan cache artifacts on Unix
+        if: ${{ runner.os != 'Windows' }}
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ steps.save-cache.outputs.package-name }}
-          path: package-${{ steps.save-cache.outputs.package-name }}.tar.gz
+          name: package-${{ steps.save-cache-unix.outputs.package-name }}
+          path: package-${{ steps.save-cache-unix.outputs.package-name }}.tar.gz
+          overwrite: true
+          retention-days: 1
+          include-hidden-files: true
+
+      - name: Upload Conan cache artifacts on Unix
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ steps.save-cache-windows.outputs.package-name }}
+          path: package-${{ steps.save-cache-windows.outputs.package-name }}.tar.gz
           overwrite: true
           retention-days: 1
           include-hidden-files: true
