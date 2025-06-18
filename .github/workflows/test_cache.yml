@@ -93,7 +93,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: "package-*"
-          path: ${{ github.workspace }}/.conan2/p
+          path: ${{ github.workspace }}
           merge-multiple: true
 
       - name: Consume Conan Action
