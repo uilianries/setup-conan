@@ -41,12 +41,16 @@ jobs:
         shell: bash
         run: conan profile detect -e --name ${{ matrix.os }}
 
+      - name: List cached Conan packages before build
+        shell: bash
+        run: conan list -c "fmt/11.2.0#latest/*"
+
       - name: Build Conan packages
         shell: bash
         run: |
           conan install -pr:a ${{ matrix.os }} -r conancenter --update --requires=fmt/11.2.0 -o "*/*:shared=${{ matrix.shared }}" --build=missing
 
-      - name: List cached Conan packages
+      - name: List cached Conan packages after build
         shell: bash
         run: conan list -c "fmt/11.2.0#latest/*"
 
