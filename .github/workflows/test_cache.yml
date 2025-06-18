@@ -109,27 +109,17 @@ jobs:
         with:
           home: ${{ github.workspace }}/.conan2
 
-      - name: Restore Conan saved artifacts (cross-platform)
+      - name: Restore Conan saved artifacts
         shell: bash
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            pwsh -Command '
-              $files = Get-ChildItem -Path "$env:GITHUB_WORKSPACE\package-*.tar.gz"
-              foreach ($file in $files) {
-                conan cache restore "$($file.FullName)"
-              }
-            '
-          else
-            for file in "${{ github.workspace }}"/package-*.tar.gz; do
-              conan cache restore "$file"
-            done
-          fi
+          shopt -s nullglob
+          for file in "${{ github.workspace }}"/package-*.tar.gz; do
+            conan cache restore "$file"
+          done
 
       - name: Verify merged artifacts
         shell: bash
         run: |
-          ls -la ${{ github.workspace }}/.conan2/p
-          ls -la ${{ github.workspace }}/.conan2/
           conan list -c "*/*#latest:*"
 
       - name: Upload final Conan cache
