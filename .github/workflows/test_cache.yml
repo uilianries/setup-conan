@@ -88,7 +88,10 @@ jobs:
           home: ${{ github.workspace }}/.conan2
 
       - name: Verify merged artifacts
-        run: conan list -c "*/*#latest:*"
+        run: |
+          ls -la ${{ github.workspace }}/.conan2/p
+          ls -la ${{ github.workspace }}/.conan2/
+          conan list -c "*/*#latest:*"
 
       - name: Upload final Conan cache
         uses: actions/cache/save@v4
