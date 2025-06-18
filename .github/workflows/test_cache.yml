@@ -54,20 +54,19 @@ jobs:
           echo "package-id=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".package_id')" >> $GITHUB_OUTPUT
           echo "recipe-revision=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o '*/*:shared=${{ matrix.shared }}' --format=json | jq -r '.graph.nodes."1".rrev')" >> $GITHUB_OUTPUT
 
-
       - name: List cached Conan packages after build
         shell: bash
         run: conan list -c "*/*#latest:*"
 
       - name: Store Conan cache in zip
         shell: bash
-        run: conan cache save --no-source --file package-${{ github.run_id }}.tar.gz "*"
+        run: conan cache save --no-source --file package-${{ github.run_id }}-${{ github.run_number }}.tar.gz "*"
 
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ github.run_id }}
-          path: package-${{ github.run_id }}.tar.gz
+          name: package-${{ github.run_id }}-${{ github.run_number }}
+          path: package-${{ github.run_id }}-${{ github.run_number }}.tar.gz
           overwrite: true
           retention-days: 1
           include-hidden-files: true
