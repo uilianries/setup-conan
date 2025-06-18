@@ -113,11 +113,12 @@ jobs:
         shell: bash
         run: |
           ls -la "${{ github.workspace }}"
-          for file in ${{ github.workspace }}/package-*.tar.gz; do
+          for file in "${{ github.workspace }}/package-*.tar.gz"; do
             conan cache restore "$file"
           done
 
       - name: Verify merged artifacts
+        shell: bash
         run: |
           ls -la ${{ github.workspace }}/.conan2/p
           ls -la ${{ github.workspace }}/.conan2/
