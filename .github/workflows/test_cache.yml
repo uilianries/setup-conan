@@ -19,7 +19,7 @@ jobs:
             windows-2022,
           ]
         shared: ["True", "False"]
-        package: ["fmt/11.2.0", "nlohmann_json/3.12.0", "spdlog/1.15.3"]
+        package: ["fmt/11.2.0", "nlohmann_json/3.12.0", "spdlog/1.15.3", "gtest/1.16.0"]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -45,7 +45,7 @@ jobs:
 
       - name: List cached Conan packages before build
         shell: bash
-        run: conan list -c "${{ matrix.package }}#latest:*"
+        run: conan list -c "*/*#latest:*"
 
       - name: Build Conan packages
         shell: bash
@@ -54,7 +54,7 @@ jobs:
 
       - name: List cached Conan packages after build
         shell: bash
-        run: conan list -c "${{ matrix.package }}#latest:*"
+        run: conan list -c "*/*#latest:*"
 
       - name: Cache Conan packages
         uses: actions/cache/save@v4
