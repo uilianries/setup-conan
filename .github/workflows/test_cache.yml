@@ -61,13 +61,13 @@ jobs:
 
       - name: Store Conan cache in zip
         shell: bash
-        run: conan cache save --no-source --file package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}.tar.gz "*"
+        run: conan cache save --no-source --file package-${{ github.run_id }}.tar.gz "*"
 
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}
-          path: package-${{ steps.build-package.outputs.recipe-revision }}-${{ steps.build-package.outputs.package-id }}.tar.gz
+          name: package-${{ github.run_id }}
+          path: package-${{ github.run_id }}.tar.gz
           overwrite: true
           retention-days: 1
           include-hidden-files: true
