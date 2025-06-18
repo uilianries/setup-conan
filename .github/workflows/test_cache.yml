@@ -82,6 +82,15 @@ jobs:
   cache-packages:
     runs-on: ubuntu-latest
     needs: [build-packages]
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          [
+            ubuntu-latest,
+            macos-latest,
+            windows-latest,
+          ]
     steps:
       - uses: actions/checkout@v4
 
