@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: build-on-${{ matrix.os }}
+    name: build-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,6 +19,8 @@ jobs:
             windows-2022,
           ]
         shared: ["True", "False"]
+        package: ["fmt/11.2.0", "nlohmann_json/3.12.0", "spdlog/1.15.3"]
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -43,16 +45,16 @@ jobs:
 
       - name: List cached Conan packages before build
         shell: bash
-        run: conan list -c "fmt/11.2.0#latest:*"
+        run: conan list -c "${{ matrix.package }}#latest:*"
 
       - name: Build Conan packages
         shell: bash
         run: |
-          conan install -pr:a ${{ matrix.os }} -r conancenter --update --requires=fmt/11.2.0 -o "*/*:shared=${{ matrix.shared }}" --build=missing
+          conan install -pr:a ${{ matrix.os }} -r conancenter --update --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" --build=missing
 
       - name: List cached Conan packages after build
         shell: bash
-        run: conan list -c "fmt/11.2.0#latest:*"
+        run: conan list -c "${{ matrix.package }}#latest:*"
 
       - name: Cache Conan packages
         uses: actions/cache/save@v4
