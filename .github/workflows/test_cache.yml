@@ -60,13 +60,17 @@ jobs:
 
       - name: Store Conan cache in zip
         shell: bash
-        run: conan cache save --no-source --file package-${{ github.run_id }}-${{ github.run_number }}.tar.gz "*"
+        id: save-cache
+        run: |
+          package_name=$(uuidgen)
+          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
+          conan cache save --no-source --file package-${package_name}.tar.gz "*"
 
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ github.run_id }}-${{ github.run_number }}
-          path: package-${{ github.run_id }}-${{ github.run_number }}.tar.gz
+          name: package-${{ steps.save-cache.outputs.package-name }}
+          path: package-${{ steps.save-cache.outputs.package-name }}.tar.gz
           overwrite: true
           retention-days: 1
           include-hidden-files: true
