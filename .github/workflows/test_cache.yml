@@ -47,8 +47,10 @@ jobs:
 
       - name: Build Conan packages
         shell: bash
+        id: build-package
         run: |
           conan install -pr:a ${{ matrix.os }} -r conancenter --update --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" --build=missing
+          echo "package-id=$(conan graph info -pr:a ${{ matrix.os }} --requires=${{ matrix.package }} -o "*/*:shared=${{ matrix.shared }}" | jq -r '.graph.nodes."1".package_id')" >> $GITHUB_OUTPUT
 
       - name: List cached Conan packages after build
         shell: bash
@@ -57,7 +59,7 @@ jobs:
       - name: Upload Conan cache artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.os }}-${{ matrix.package }}-${{ matrix.shared }}
+          name: package-${{ steps.build-package.outputs.package-id }}
           path: ${{ github.workspace }}/.conan2/p
 
   cache-packages:
