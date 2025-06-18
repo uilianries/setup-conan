@@ -63,6 +63,7 @@ jobs:
           path: ${{ github.workspace }}/.conan2/p
           overwrite: true
           retention-days: 1
+          include-hidden-files: true
 
   cache-packages:
     runs-on: ubuntu-latest
