@@ -66,11 +66,27 @@ It's possible to customize the action using the following options:
 | `home`           | string  | A custom path to be used as Conan cache directory.                                                          |
 | `audit_token`    | string  | The Conan audit token to authenticate to the Audit server with Conan.                                       |
 | `config_urls`    | list    | URLs of the Git repositories containing the custom Conan configurations to be installed.                    |
-| `cache_packages` | boolean | Cache all stored Conan packages, under Conan cache, using Github cache support. false by default            |
+| `cache_packages` | boolean | Cache all stored Conan packages, under Conan cache, using Github cache support. See [Caching Conan packages](#caching-conan-packages). false by default |
 | `use_venv`       | boolean | Use a virtual environment for the Python version set in the GitHub runner.                                  |
 | `profile_detect` | boolean | Automatically detect and use a Conan profile based on the GitHub runner environment. true by default                        |
 | `python_version` | string  | **DEPRECATED** Use the Python version set in the GitHub runner instead or a GitHub Action to set up Python. |
 
+
+## Caching Conan packages
+
+When `cache_packages: true` is set, the Conan packages folder (`<conan-home>/p`) is cached using [actions/cache](https://github.com/actions/cache).
+
+```yaml
+  - name: Install Conan
+    uses: conan-io/setup-conan@v1
+    with:
+      cache_packages: true
+
+  - name: Install Conan dependencies
+    run: conan install . --build=missing
+```
+
+Each job saves its own cache entry, using the key `conan-<os>-<arch>-<image>-<run id>-<run attempt>-<random>` (e.g. `conan-Linux-X64-ubuntu24-1234567890-1-1834529871`), and restores the most recent entry saved for the same OS, architecture and runner image (`conan-<os>-<arch>-<image>-`). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
 
 ## Using setup-python Action alongside setup-conan
 
