@@ -23,6 +23,10 @@ inputs:
     description: 'Cache all Conan packages from the cache'
     required: false
     default: 'false'
+  cache_key:
+    description: 'Custom key for the Conan packages cache. Requires cache_packages. By default, it is computed from the runner OS, architecture and image'
+    required: false
+    default: ''
   python_version:
     description: 'Python version to install'
     required: false
@@ -127,7 +131,7 @@ runs:
         conan audit provider auth conancenter --token=${{ inputs.audit_token }}
 
     - name: Compute Conan cache key
-      if: ${{ inputs.cache_packages == 'true' }}
+      if: ${{ inputs.cache_packages == 'true' && inputs.cache_key == '' }}
       id: conan-cache-key
       shell: bash
       run: |
@@ -141,7 +145,7 @@ runs:
       id: cache-conan-packages
       with:
         path: ${{ steps.get-conan-home.outputs.conan-home }}/p
-        key: ${{ steps.conan-cache-key.outputs.key }}
+        key: ${{ inputs.cache_key || steps.conan-cache-key.outputs.key }}
         restore-keys: |
           ${{ steps.conan-cache-key.outputs.prefix }}
 
