@@ -67,6 +67,7 @@ It's possible to customize the action using the following options:
 | `audit_token`    | string  | The Conan audit token to authenticate to the Audit server with Conan.                                       |
 | `config_urls`    | list    | URLs of the Git repositories containing the custom Conan configurations to be installed.                    |
 | `cache_packages` | boolean | Cache all stored Conan packages, under Conan cache, using Github cache support. See [Caching Conan packages](#caching-conan-packages). false by default |
+| `cache_key`      | string  | Custom key for the cache. See [Caching Conan packages](#caching-conan-packages). By default, it's computed from the runner OS, architecture and image. |
 | `use_venv`       | boolean | Use a virtual environment for the Python version set in the GitHub runner.                                  |
 | `profile_detect` | boolean | Automatically detect and use a Conan profile based on the GitHub runner environment. true by default                        |
 | `python_version` | string  | **DEPRECATED** Use the Python version set in the GitHub runner instead or a GitHub Action to set up Python. |
@@ -87,6 +88,21 @@ When `cache_packages: true` is set, the Conan packages folder (`<conan-home>/p`)
 ```
 
 Each job saves its own cache entry and restores the most recent one saved on the same kind of runner (OS, architecture and runner image). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
+
+
+### Custom cache key
+
+To control the cache yourself, set `cache_key`. The key is used as is, forwarded to `actions/cache` for cache and restore key, and the cache is only restored when it matches exactly. As a saved cache can not be updated, include something that changes when your dependencies change, and make it unique for each job in a build matrix:
+
+```yaml
+  - name: Install Conan
+    uses: conan-io/setup-conan@v1
+    with:
+      cache_packages: true
+      cache_key: conan-${{ matrix.os }}-${{ matrix.build_type }}-${{ hashFiles('conan.lock') }}
+```
+
+For further information how caching works with GitHub Actions, see the [actions/cache documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching).
 
 ### Keeping the cache small
 
