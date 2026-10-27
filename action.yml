@@ -133,7 +133,7 @@ runs:
       run: |
         prefix="conan-${{ runner.os }}-${{ runner.arch }}-${ImageOS:-selfhosted}-"
         echo "prefix=${prefix}" >> $GITHUB_OUTPUT
-        echo "key=${prefix}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RANDOM}${RANDOM}" >> $GITHUB_OUTPUT
+        echo "key=${prefix}${GITHUB_RUN_ID}-${{ job.check_run_id }}" >> $GITHUB_OUTPUT
 
     - name: Cache Conan packages
       if: ${{ inputs.cache_packages == 'true' }}

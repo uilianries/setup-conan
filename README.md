@@ -86,7 +86,7 @@ When `cache_packages: true` is set, the Conan packages folder (`<conan-home>/p`)
     run: conan install . --build=missing
 ```
 
-Each job saves its own cache entry, using the key `conan-<os>-<arch>-<image>-<run id>-<run attempt>-<random>` (e.g. `conan-Linux-X64-ubuntu24-1234567890-1-1834529871`), and restores the most recent entry saved for the same OS, architecture and runner image (`conan-<os>-<arch>-<image>-`). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
+Each job saves its own cache entry and restores the most recent one saved on the same kind of runner (OS, architecture and runner image). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
 
 ## Using setup-python Action alongside setup-conan
 
