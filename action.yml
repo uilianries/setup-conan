@@ -126,15 +126,24 @@ runs:
       run: |
         conan audit provider auth conancenter --token=${{ inputs.audit_token }}
 
+    - name: Compute Conan cache key
+      if: ${{ inputs.cache_packages == 'true' }}
+      id: conan-cache-key
+      shell: bash
+      run: |
+        prefix="conan-${{ runner.os }}-${{ runner.arch }}-${ImageOS:-selfhosted}-"
+        echo "prefix=${prefix}" >> $GITHUB_OUTPUT
+        echo "key=${prefix}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RANDOM}${RANDOM}" >> $GITHUB_OUTPUT
+
     - name: Cache Conan packages
       if: ${{ inputs.cache_packages == 'true' }}
       uses: actions/cache@v5.0.3
       id: cache-conan-packages
       with:
         path: ${{ steps.get-conan-home.outputs.conan-home }}/p
-        key: conan-${{ steps.install-conan.outputs.conan-version }}-${{ runner.os }}
+        key: ${{ steps.conan-cache-key.outputs.key }}
         restore-keys: |
-          conan-${{ steps.install-conan.outputs.conan-version }}-${{ runner.os }}-
+          ${{ steps.conan-cache-key.outputs.prefix }}
 
 branding:
   icon: 'package'
