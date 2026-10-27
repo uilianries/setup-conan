@@ -88,6 +88,19 @@ When `cache_packages: true` is set, the Conan packages folder (`<conan-home>/p`)
 
 Each job saves its own cache entry and restores the most recent one saved on the same kind of runner (OS, architecture and runner image). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
 
+### Keeping the cache small
+
+The cache keeps everything from earlier runs, including source and build folders, and every job uploads a new entry that counts towards the GitHub repository cache limit. If the size becomes a problem, Conan can remove those folders and the packages that have not been used recently. For example, in a step after the last Conan command:
+
+```yaml
+  - name: Clean Conan cache
+    run: |
+      conan cache clean "*" --source --build --temp
+      conan remove "*" --lru=4w --confirm
+```
+
+For further reference, please see the [Conan cache documentation](https://docs.conan.io/2/reference/commands/cache.html#conan-cache-clean) and the [Conan remove documentation](https://docs.conan.io/2/reference/commands/remove.html).
+
 ## Using setup-python Action alongside setup-conan
 
 If you are using the [setup-python](https://github.com/actions/setup-python) action in your workflow, you can use it alongside the setup-conan action.
