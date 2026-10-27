@@ -66,11 +66,40 @@ It's possible to customize the action using the following options:
 | `home`           | string  | A custom path to be used as Conan cache directory.                                                          |
 | `audit_token`    | string  | The Conan audit token to authenticate to the Audit server with Conan.                                       |
 | `config_urls`    | list    | URLs of the Git repositories containing the custom Conan configurations to be installed.                    |
-| `cache_packages` | boolean | Cache all stored Conan packages, under Conan cache, using Github cache support. false by default            |
+| `cache_packages` | boolean | Cache all stored Conan packages, under Conan cache, using Github cache support. See [Caching Conan packages](#caching-conan-packages). false by default |
 | `use_venv`       | boolean | Use a virtual environment for the Python version set in the GitHub runner.                                  |
 | `profile_detect` | boolean | Automatically detect and use a Conan profile based on the GitHub runner environment. true by default                        |
 | `python_version` | string  | **DEPRECATED** Use the Python version set in the GitHub runner instead or a GitHub Action to set up Python. |
 
+
+## Caching Conan packages
+
+When `cache_packages: true` is set, the Conan packages folder (`<conan-home>/p`) is cached using [actions/cache](https://github.com/actions/cache).
+
+```yaml
+  - name: Install Conan
+    uses: conan-io/setup-conan@v1
+    with:
+      cache_packages: true
+
+  - name: Install Conan dependencies
+    run: conan install . --build=missing
+```
+
+Each job saves its own cache entry and restores the most recent one saved on the same kind of runner (OS, architecture and runner image). Conan then builds or downloads anything missing, and the updated cache is saved when the job finishes.
+
+### Keeping the cache small
+
+The cache keeps everything from earlier runs, including source and build folders, and every job uploads a new entry that counts towards the GitHub repository cache limit. If the size becomes a problem, Conan can remove those folders and the packages that have not been used recently. For example, in a step after the last Conan command:
+
+```yaml
+  - name: Clean Conan cache
+    run: |
+      conan cache clean "*" --source --build --temp
+      conan remove "*" --lru=4w --confirm
+```
+
+For further reference, please see the [Conan cache documentation](https://docs.conan.io/2/reference/commands/cache.html#conan-cache-clean) and the [Conan remove documentation](https://docs.conan.io/2/reference/commands/remove.html).
 
 ## Using setup-python Action alongside setup-conan
 

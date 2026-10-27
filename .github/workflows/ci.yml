@@ -21,12 +21,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Execute checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Consume Conan Action
         uses: ./
         with:
-          version: '2.15.1'
+          version: '2.29.1'
           config_urls: |
               https://github.com/conan-io/conan-extensions.git
               https://github.com/conan-io/conan-extensions.git
@@ -36,12 +36,13 @@ jobs:
           audit_token: 'fake_token'
           home: ${{ github.workspace }}/conan_home
           cache_packages: 'true'
+          # DEPRECATED: Expected to see a warning about the python_version input being deprecated in the action logs
           python_version: '3.10'
 
       - name: Verify action results
         shell: bash
         run: |
-          conan --version | grep -q '2.15.1'
+          conan --version | grep -q '2.29.1'
           conan profile show -pr:a default | grep -q 'settings'
           grep -q token "$(conan config home)/audit_providers.json"
           conan config home | grep -q "conan_home"
@@ -51,16 +52,44 @@ jobs:
         run: |
           conan install -r conancenter --requires=asio/1.32.0 --build=missing
 
+  cache-restore-test:
+    needs: testing-action
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Execute checkout
+        uses: actions/checkout@v7
+
+      - name: Consume Conan Action
+        uses: ./
+        with:
+          version: '2.29.1'
+          # Must be the same path used by testing-action, otherwise the cache is not restored
+          home: ${{ github.workspace }}/conan_home
+          cache_packages: 'true'
+
+      - name: Verify cache was restored
+        shell: bash
+        run: |
+          # asio is only in the local cache of this fresh runner if it was restored by prefix
+          conan cache path asio/1.32.0
+
   docker-test:
     runs-on: ubuntu-latest
     container:
       image: python:3.12-slim
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Consume Conan Action
         uses: ./
         with:
-          version: "2.15.1"
+          version: "2.29.1"
           use_venv: true
           cache_packages: 'false'
       - name: test conan is available
@@ -71,7 +100,7 @@ jobs:
   profile-detect-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Consume Conan Action without profile detection
         uses: ./
         with:
