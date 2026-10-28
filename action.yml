@@ -135,12 +135,9 @@ runs:
       id: conan-cache-key
       shell: bash
       env:
-        CACHE_KEY_SUFFIX: ${{ inputs.cache_key }}
+        CACHE_KEY: ${{ inputs.cache_key }}
       run: |
-        prefix="conan-${{ runner.os }}-${{ runner.arch }}-${ImageOS:-selfhosted}-"
-        if [ -n "${CACHE_KEY_SUFFIX}" ]; then
-          prefix="${prefix}${CACHE_KEY_SUFFIX}-"
-        fi
+        prefix="conan-${CACHE_KEY:+${CACHE_KEY}-}${{ runner.os }}-${{ runner.arch }}-${ImageOS:-selfhosted}-"
         echo "prefix=${prefix}" >> $GITHUB_OUTPUT
         echo "key=${prefix}${GITHUB_RUN_ID}-${{ job.check_run_id }}" >> $GITHUB_OUTPUT
 

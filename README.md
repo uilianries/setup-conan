@@ -92,7 +92,7 @@ Each job saves its own cache entry and restores the most recent one saved on the
 
 ### Custom cache key
 
-To separate caches, set `cache_key`. It is added as an extra segment to the computed key (`conan-<os>-<arch>-<image>-<cache_key>-<run>`), so each value gets its own cache and keeps the default behavior: the most recent entry with the same `cache_key` is restored, and a new one is saved when the job finishes. Use it to keep caches apart, for example one per job in a build matrix:
+To separate caches, set `cache_key`. It is added as an extra segment to the computed key (`conan-<cache_key>-<os>-<arch>-<image>-<run>`), so each value gets its own cache and keeps the default behavior: the most recent entry with the same `cache_key` is restored, and a new one is saved when the job finishes. Use it to keep caches apart, for example one per job in a build matrix:
 
 ```yaml
   - name: Install Conan
