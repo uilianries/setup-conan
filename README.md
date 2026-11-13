@@ -15,6 +15,7 @@ This action provides a simple and flexible way to set up Conan with custom confi
 - 🗂️ Cache Conan packages using GitHub cache
 - 🔍 Support for custom Conan home
 - 💪 Cross-platform support
+- TESTING
 
 ## Usage
 
